@@ -11,33 +11,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ macos-latest ]
         build-type: [ clean ]
         env:
           -
             TARGET: i386-pc-msdosdjgpp
-            PACKAGES: binutils gcc djgpp-2.05 watt32
-          -
-            TARGET: i386-pc-msdosdjgpp
             PACKAGES: binutils gcc djgpp-cvs watt32
-          -
-            TARGET: i386-pc-msdosdjgpp
-            PACKAGES: gdb
-          -
-            TARGET: arm-eabi
-            PACKAGES: binutils gcc newlib
-          -
-            TARGET: arm-eabi
-            PACKAGES: gdb
-          -
-            TARGET: avr
-            PACKAGES: binutils gcc avr-libc
-          -
-            TARGET: avr
-            PACKAGES: gdb avarice simulavr avrdude
-          -
-            TARGET: ia16-elf
-            PACKAGES: binutils gcc newlib
 
     steps:
       - uses: actions/checkout@v2

@@ -11,3 +11,196 @@ index d158664..f840962 100644
  
  STAT_LIB = ../lib/libwatt.a
  OBJDIR   = build/djgpp
+diff --git a/src/makefile.all b/src/makefile.all
+index 40a7368..bb410e9 100644
+--- a/src/makefile.all
++++ b/src/makefile.all
+@@ -280,21 +280,23 @@ endif
+ 
+ OBJS := $(subst .obj,.o,$(OBJS))
+ 
+-C_ARGS   = $(OBJPATH)gcc.arg
+-LIB_ARGS = $(OBJPATH)ar.arg
++C_ARGS   = ./$(OBJPATH)gcc.arg
++LIB_ARGS = ./$(OBJPATH)ar.arg
+ 
+ TARGETS = $(STAT_LIB)
+ 
+-all: $(C_ARGS) $(PKT_STUB) $(OBJPATH)cflags.h $(TARGETS)
++all: $(PKT_STUB) $(OBJPATH)cflags.h $(TARGETS)
+ 	@echo All done
+ 
+ $(STAT_LIB): $(OBJS) $(LIB_ARGS)
+ 	$(AR) $@ @$(LIB_ARGS)
+ 
+-$(OBJPATH)%.o: %.c
++$(OBJPATH)%.o: %.c $(C_ARGS)
++	pwd
+ 	$(CC) -c @$(C_ARGS) -o $@ $<
+ 
+-$(OBJPATH)%.o: %.S
++$(OBJPATH)%.o: %.S $(C_ARGS)
++	pwd
+ 	$(CC) -E @$(C_ARGS) $< > $(OBJPATH)$*.iS
+ 	$(AS) $(AFLAGS) $(OBJPATH)$*.iS -o $@
+ 
+@@ -620,7 +622,7 @@ TARGETS = $(STAT_LIB) $(IMP_LIB) $(WATT_DLL)
+ TARGETS = $(STAT_LIB)
+ @endif
+ 
+-all: $(PKT_STUB) $(C_ARGS) $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
++all: $(PKT_STUB) $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
+ 
+ @ifdef WIN32
+ $(IMP_LIB): $(WATT_DLL)
+@@ -637,7 +639,7 @@ $(OBJPATH)language.obj: language.c lang.c
+ $(OBJPATH)asmpkt.obj:   asmpkt.asm
+ $(OBJPATH)cpumodel.obj: cpumodel.asm
+ 
+-.c{$(OBJDIR)}.obj:  .AUTODEPEND
++.c{$(OBJDIR)}.obj:  .AUTODEPEND $(C_ARGS)
+ 	$(CC) $[@ @$(C_ARGS) -fo=$^@
+ 
+ .asm{$(OBJDIR)}.obj:  .AUTODEPEND
+@@ -974,7 +976,7 @@ export CL=
+ 
+ TARGETS = $(STAT_LIB) $(IMP_LIB) $(WATT_DLL)
+ 
+-all: $(C_ARGS) $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
++all: $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
+ 	@echo All done
+ 
+ #
+@@ -993,10 +995,10 @@ $(WATT_DLL): $(OBJS) $(RESOURCE) $(LINK_ARGS)
+ 	cat link.tmp >> $(WATT_DLL:.dll=.map)
+ 	rm -f $(IMP_LIB:.lib=.exp)
+ 
+-$(OBJPATH)%.obj: %.c
++$(OBJPATH)%.obj: %.c $(C_ARGS)
+ 	$(CC) -c @$(C_ARGS) -Fo./$@ $<
+ 
+-$(OBJPATH)%.obj: %.cpp
++$(OBJPATH)%.obj: %.cpp $(C_ARGS)
+ 	$(CC) -c -TP -EHsc @$(C_ARGS) -Fo./$@ $<
+ 
+ $(OBJPATH)%.obj: %.asm
+@@ -1038,7 +1040,7 @@ AR     = 386lib -nobanner
+ 
+ TARGETS = $(STAT_LIB)
+ 
+-all: $(PKT_STUB) $(C_ARGS) $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
++all: $(PKT_STUB) $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
+ 	@echo All done
+ 
+ $(STAT_LIB): $(OBJS)
+@@ -1049,7 +1051,7 @@ $(STAT_LIB): $(OBJS)
+ $(OBJPATH)cpumodel.obj: cpumodel.asm
+ 	$(AS) $(AFLAGS) $<, $(OBJDIR_)\cpumodel.obj
+ 
+-$(OBJPATH)%.obj: %.c
++$(OBJPATH)%.obj: %.c $(C_ARGS)
+ 	$(CC) -c @$(C_ARGS) -o $@ $<
+ 
+ -include $(OBJPATH)watt32.dep
+@@ -1135,7 +1137,7 @@ RESOURCE  = $(OBJPATH)watt-32.res
+ 
+ TARGETS = $(STAT_LIB) $(IMP_LIB) $(WATT_DLL)
+ 
+-all: $(C_ARGS) $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
++all: $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
+ 	@echo All done
+ 
+ $(STAT_LIB): $(OBJS)
+@@ -1148,10 +1150,10 @@ $(WATT_DLL): $(OBJS) $(RESOURCE) $(LINK_ARGS)
+ 
+ $(OBJDIR)/cpumodel.obj: cpumodel.nas
+ 
+-$(OBJDIR)/%.obj: %.c
++$(OBJDIR)/%.obj: %.c $(C_ARGS)
+ 	$(CC) -c @$(C_ARGS) $*.c -o $@
+ 
+-$(OBJDIR)/%.obj: %.cpp
++$(OBJDIR)/%.obj: %.cpp $(C_ARGS)
+ 	$(CC) -c @$(C_ARGS) -wd110 $*.cpp -o $@
+ 
+ $(OBJDIR)/%.obj: %.nas
+@@ -1227,7 +1229,7 @@ LINK_ARGS = $(OBJPATH)ld.arg
+ 
+ TARGETS = $(STAT_LIB) $(IMP_LIB) $(WATT_DLL)
+ 
+-all: $(C_ARGS) $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
++all: $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
+ 	@echo All done
+ 
+ $(STAT_LIB): $(OBJS) $(LIB_ARGS)
+@@ -1240,10 +1242,10 @@ $(WATT_DLL): $(OBJS) $(RESOURCE) $(LINK_ARGS)
+ 
+ $(OBJPATH)cpumodel.o: cpumodel.S
+ 
+-$(OBJPATH)%.o: %.c
++$(OBJPATH)%.o: %.c $(C_ARGS)
+ 	$(CC) -c @$(C_ARGS) -o $@ $<
+ 
+-$(OBJPATH)%.o: %.S
++$(OBJPATH)%.o: %.S $(C_ARGS)
+ 	$(CC) -E @$(C_ARGS) $< > $(OBJPATH)$*.iS
+ 	$(AS) $(AFLAGS) $(OBJPATH)$*.iS -o $@
+ 
+@@ -1313,7 +1315,7 @@ LINK_ARGS = $(OBJPATH)ld.arg
+ 
+ TARGETS = $(STAT_LIB) $(IMP_LIB) $(WATT_DLL)
+ 
+-all: $(C_ARGS) $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
++all: $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
+ 	@echo All done
+ 
+ $(STAT_LIB): $(OBJS) $(LIB_ARGS)
+@@ -1326,10 +1328,10 @@ $(WATT_DLL): $(OBJS) $(RESOURCE) $(LINK_ARGS)
+ 
+ $(OBJPATH)cpumodel.o: cpumodel.S
+ 
+-$(OBJPATH)%.o: %.c
++$(OBJPATH)%.o: %.c $(C_ARGS)
+ 	$(CC) -c @$(C_ARGS) -o $@ $<
+ 
+-$(OBJPATH)%.o: %.S
++$(OBJPATH)%.o: %.S $(C_ARGS)
+ 	$(CC) -E @$(C_ARGS) $< > $(OBJPATH)$*.iS
+ 	$(AS) $(AFLAGS) $(OBJPATH)$*.iS -o $@
+ 
+@@ -1369,7 +1371,7 @@ LINK_ARGS = $(OBJPATH)ld.arg
+ 
+ TARGETS = $(STAT_LIB) $(IMP_LIB) $(WATT_DLL)
+ 
+-all: $(C_ARGS) $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
++all: $(OBJPATH)cflags.h $(OBJPATH)cflagsbf.h $(TARGETS)
+ 	@echo All done
+ 
+ $(STAT_LIB): $(OBJS) $(LIB_ARGS)
+@@ -1382,10 +1384,10 @@ $(WATT_DLL): $(OBJS) $(RESOURCE) $(LINK_ARGS)
+ 
+ $(OBJPATH)cpumodel.o: cpumodel.S
+ 
+-$(OBJPATH)%.o: %.c
++$(OBJPATH)%.o: %.c $(C_ARGS)
+ 	$(CC) -c @$(C_ARGS) -o $@ $<
+ 
+-$(OBJPATH)%.o: %.S
++$(OBJPATH)%.o: %.S $(C_ARGS)
+ 	$(CC) -E @$(C_ARGS) $< > $(OBJPATH)$*.iS
+ 	$(AS) $(AFLAGS) $(OBJPATH)$*.iS -o $@ > $(OBJPATH)$*.lst
+ 
+diff --git a/util/sysdep.h b/util/sysdep.h
+index aea88da..8076dc5 100644
+--- a/util/sysdep.h
++++ b/util/sysdep.h
+@@ -35,7 +35,8 @@
+ #elif defined(__MINGW32__) || defined(__WATCOMC__)
+   #include <unistd.h>
+ 
+-#elif defined(__CYGWIN__) || defined(__unix__) || defined(__linux__)
++#elif defined(__CYGWIN__) || defined(__unix__) || defined(__linux__) || \
++      defined(__APPLE__)
+   #include <unistd.h>
+ 
+   /* Cross compiling from Linux->DOS (assume gcc used)
